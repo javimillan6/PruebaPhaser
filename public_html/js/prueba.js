@@ -3,7 +3,7 @@ var game= new Phaser.Game(800,600,Phaser.AUTO,'ejemploPhaser',{preload: preload,
 function preload(){
     game.stage.backgroundColor = '#007236';
     game.load.image('terrenoCesped', 'assets/mapa/terrenoCesped.png');
-    game.load.image('jugador', 'assets/player/spriteJugador.png');
+    game.load.image('jugador', 'assets/player/player1.png');
 }
 
 var land;
