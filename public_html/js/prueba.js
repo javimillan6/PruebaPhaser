@@ -34,45 +34,59 @@ function create(){
     aX = 0;
     aY = 0;
     
-    //Tamano del mundo
+    //Tamano del mundo.
     game.world.setBounds(0, 0, 3000, 3000);
+    
+    //Agregamos sus fisicas
+    game.physics.startSystem(Phaser.Physics.ARCADE);
    
-    //Llenar el fondo
-    for (var i = 0; i < 30; i++)
-    {
-        for (var j = 0; j < 30; j++){
-            if(i<2 || j<2 || i>27 || j>27){
-                var sea = game.add.sprite(i*100, j*100, 'agua');
-                sea.animations.add('moveSea');
-                //Parametros (nombre animacion, velocidad, se repite).
-                sea.animations.play('moveSea', 8, true);
-            }else if(i == 2 && j == 2){
-                game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
-            }else if(i == 2 && j == 27){
-                game.add.sprite(i*100, j*100, 'terrenoCespedBotLeft');
-            }else if(i == 27 && j == 2){
-                game.add.sprite(i*100, j*100, 'terrenoCespedTopRight');
-            }else if(i == 27 && j == 27){
-                game.add.sprite(i*100, j*100, 'terrenoCespedBotRight');
+    //Crear tablero.
+    var tablero = new Tablero();
+    var matriz = tablero.getTablero();
+    
+    //Mapear el terreno.
+    for (var i = 0; i < matriz.length; i++) {
+        for (var j = 0; j < matriz[i].length; j++) {
+            switch(matriz[i][j]){
+                case 'water': 
+                    var sea = game.add.sprite(i*100, j*100, 'agua');
+                    sea.animations.add('moveSea');
+                    //Parametros (nombre animacion, velocidad, se repite).
+                    sea.animations.play('moveSea', 8, true);
+                    break;
+                case 'terrain':
+                    game.add.sprite(i*100, j*100, 'terrenoCesped');
+                    break;
+                case 'terrainTopLeft':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
+                    break;
+                case 'terrainBotLeft':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedBotLeft');
+                    break;
+                case 'terrainTopRight':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedTopRight');
+                    break;
+                case 'terrainTopLeft':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
+                    break;
+                case 'terrainLeft':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedLeft');
+                    break;
+                case 'terrainRight':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedRight');
+                    break;
+                case 'terrainTop':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedTop');
+                    break;
+                case 'terrainTopBot':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedBot');
+                    break;
             }
-            else if(i<3){
-                game.add.sprite(i*100, j*100, 'terrenoCespedLeft');
-            }else if(i>26){
-                game.add.sprite(i*100, j*100, 'terrenoCespedRight');
-            }else if(j<3){
-                game.add.sprite(i*100, j*100, 'terrenoCespedTop');
-            }else if(j>26){
-                game.add.sprite(i*100, j*100, 'terrenoCespedBot');
-            }else{
-                game.add.sprite(i*100, j*100, 'terrenoCesped');
-            }        
         }
     }
     
     //Crear jugador
     player = game.add.sprite(375, 275, 'jugador');
-    //Agregamos sus fisicas
-    game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.enable(player, Phaser.Physics.ARCADE);
     player.body.collideWorldBounds = true;
     
