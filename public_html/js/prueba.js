@@ -4,7 +4,7 @@ function preload(){
     
     //Imagenes y sprites del jugador
     game.load.image('jugador', 'assets/player/player1.png');
-    game.load.image('jugadorTrail', 'assets/player/player1trail.png');
+    game.load.image('jugadorTrail', 'assets/player/player1Trail.png');
     
     //Imagenes y sprites del suelo
     game.load.spritesheet('agua', 'assets/mapa/aguaSpriteSheet.png', 100, 100);
