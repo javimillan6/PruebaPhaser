@@ -17,6 +17,7 @@ function preload(){
     game.load.image('terrenoCespedBotLeft', 'assets/mapa/suelo/terrenoCespedBotLeft.png');
     game.load.image('terrenoCespedRight', 'assets/mapa/suelo/terrenoCespedRight.png');
     game.load.image('terrenoCespedLeft', 'assets/mapa/suelo/terrenoCespedLeft.png');
+    game.load.image('wall', 'assets/mapa/wall.png');
 }
 
 var land;
@@ -44,6 +45,8 @@ function create(){
     var tablero = new Tablero();
     var matriz = tablero.getTablero();
     
+    matriz[4][4] = 'wall';
+    matriz[4][5] = 'wall';
     //Mapear el terreno.
     for (var i = 0; i < matriz.length; i++) {
         for (var j = 0; j < matriz[i].length; j++) {
@@ -66,8 +69,8 @@ function create(){
                 case 'terrainTopRight':
                     game.add.sprite(i*100, j*100, 'terrenoCespedTopRight');
                     break;
-                case 'terrainTopLeft':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
+                case 'terrainBotRight':
+                    game.add.sprite(i*100, j*100, 'terrenoCespedBotRight');
                     break;
                 case 'terrainLeft':
                     game.add.sprite(i*100, j*100, 'terrenoCespedLeft');
@@ -78,8 +81,13 @@ function create(){
                 case 'terrainTop':
                     game.add.sprite(i*100, j*100, 'terrenoCespedTop');
                     break;
-                case 'terrainTopBot':
+                case 'terrainBot':
                     game.add.sprite(i*100, j*100, 'terrenoCespedBot');
+                    break;
+                case 'wall':
+                    var wall = game.add.sprite(i*100, j*100, 'wall');
+                    game.physics.arcade.enable(wall, Phaser.Physics.ARCADE);
+                    wall.body.immovable = true;
                     break;
             }
         }
@@ -87,7 +95,7 @@ function create(){
     
     //Crear jugador
     player = game.add.sprite(375, 275, 'jugador');
-    game.physics.enable(player, Phaser.Physics.ARCADE);
+    game.physics.arcade.enable(player, Phaser.Physics.ARCADE);
     player.body.collideWorldBounds = true;
     
     //Variable que pilla el teclado.
