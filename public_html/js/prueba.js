@@ -37,6 +37,7 @@ function create(){
     //Inicializacion variables globales del juego.
     velocidadX = 0;
     velocidadY = 0;
+    velocidad = 5;
     aX = 0;
     aY = 0;
     
