@@ -1,5 +1,14 @@
 var game= new Phaser.Game(800,600,Phaser.AUTO,'ejemploPhaser',{preload: preload, create: create, update: update});
 
+var land;
+var cursors;
+var velocidadX;
+var velocidadY;
+var aX;
+var aY;
+var player;
+var velocidad;
+
 function preload(){
     
     //Imagenes y sprites del jugador
@@ -18,17 +27,13 @@ function preload(){
     game.load.image('terrenoCespedRight', 'assets/mapa/suelo/terrenoCespedRight.png');
     game.load.image('terrenoCespedLeft', 'assets/mapa/suelo/terrenoCespedLeft.png');
     game.load.image('wall', 'assets/mapa/wall.png');
+    game.load.image('velocidad', 'assets/mapa/velocidad.png');
 }
 
-var land;
-var cursors;
-var velocidadX;
-var velocidadY;
-var aX;
-var aY;
-var player;
+
 
 function create(){
+    
     //Inicializacion variables globales del juego.
     velocidadX = 0;
     velocidadY = 0;
@@ -98,29 +103,37 @@ function create(){
     game.physics.arcade.enable(player, Phaser.Physics.ARCADE);
     player.body.collideWorldBounds = true;
     
+    //creamos objeto
+    objetoVelocidad= game.add.sprite(400, 400, 'velocidad');
+    game.physics.enable(objetoVelocidad, Phaser.Physics.ARCADE);
+    objetoVelocidad.body.immovable=true;
+    
     //Variable que pilla el teclado.
     cursors = game.input.keyboard.createCursorKeys();
 }
 
 function update() {
     
+    // object1, object2, collideCallback, processCallback, callbackContext
+    game.physics.arcade.collide(objetoVelocidad, player, cogeVelocidad, null, this);
+    
     //Movimiento del jugador.
     if (cursors.up.isDown)
     {
-        aY -= 10;
+        aY -= velocidad;
     }
     else if (cursors.down.isDown)
     {
-        aY += 10;
+        aY += velocidad;
     }
 
     if (cursors.left.isDown)
     {
-        aX -= 10;
+        aX -= velocidad;
     }
     else if (cursors.right.isDown)
     {
-        aX += 10;
+        aX += velocidad;
     }
     
     //Formula de la aceleracion.
@@ -140,3 +153,7 @@ function update() {
 
 }
 
+function cogeVelocidad(sprite1, sprite2){
+    sprite1.destroy();
+    velocidad+=20;
+}
