@@ -2,159 +2,140 @@ var game= new Phaser.Game(800,600,Phaser.AUTO,'ejemploPhaser',{preload: preload,
 
 var land;
 var cursors;
-var velocidadX;
-var velocidadY;
-var aX;
-var aY;
 var player;
 var velocidad;
+var walls;
 
-function preload(){
-    
-    //Imagenes y sprites del jugador
-    game.load.image('jugador', 'assets/player/player1.png');
-    game.load.image('jugadorTrail', 'assets/player/player1Trail.png');
-    
-    //Imagenes y sprites del suelo
-    game.load.spritesheet('agua', 'assets/mapa/aguaSpriteSheet.png', 100, 100);
-    game.load.image('terrenoCesped', 'assets/mapa/suelo/terrenoCesped.png');
-    game.load.image('terrenoCespedTop', 'assets/mapa/suelo/terrenoCespedTop.png');
-    game.load.image('terrenoCespedTopRight', 'assets/mapa/suelo/terrenoCespedTopRight.png');
-    game.load.image('terrenoCespedTopLeft', 'assets/mapa/suelo/terrenoCespedTopLeft.png');
-    game.load.image('terrenoCespedBot', 'assets/mapa/suelo/terrenoCespedBot.png');
-    game.load.image('terrenoCespedBotRight', 'assets/mapa/suelo/terrenoCespedBotRight.png');
-    game.load.image('terrenoCespedBotLeft', 'assets/mapa/suelo/terrenoCespedBotLeft.png');
-    game.load.image('terrenoCespedRight', 'assets/mapa/suelo/terrenoCespedRight.png');
-    game.load.image('terrenoCespedLeft', 'assets/mapa/suelo/terrenoCespedLeft.png');
-    game.load.image('wall', 'assets/mapa/wall.png');
-    game.load.image('velocidad', 'assets/mapa/velocidad.png');
-}
+var pantallaJuego ={
+    preload: function(){
+        //Imagenes y sprites del jugador
+        game.load.image('jugador', 'assets/player/player1.png');
+        game.load.image('jugadorTrail', 'assets/player/player1Trail.png');
 
+        //Imagenes y sprites del suelo
+        game.load.spritesheet('agua', 'assets/mapa/aguaSpriteSheet.png', 100, 100);
+        game.load.image('terrenoCesped', 'assets/mapa/suelo/terrenoCesped.png');
+        game.load.image('terrenoCespedTop', 'assets/mapa/suelo/terrenoCespedTop.png');
+        game.load.image('terrenoCespedTopRight', 'assets/mapa/suelo/terrenoCespedTopRight.png');
+        game.load.image('terrenoCespedTopLeft', 'assets/mapa/suelo/terrenoCespedTopLeft.png');
+        game.load.image('terrenoCespedBot', 'assets/mapa/suelo/terrenoCespedBot.png');
+        game.load.image('terrenoCespedBotRight', 'assets/mapa/suelo/terrenoCespedBotRight.png');
+        game.load.image('terrenoCespedBotLeft', 'assets/mapa/suelo/terrenoCespedBotLeft.png');
+        game.load.image('terrenoCespedRight', 'assets/mapa/suelo/terrenoCespedRight.png');
+        game.load.image('terrenoCespedLeft', 'assets/mapa/suelo/terrenoCespedLeft.png');
+        game.load.image('wall', 'assets/mapa/wall.png');
+        game.load.image('velocidad', 'assets/mapa/velocidad.png');        
+    },
+    create: function(){
+        //Inicializacion variables globales del juego.
+        velocidad = 1000;
+        walls = [];
 
+        //Tamano del mundo.
+        game.world.setBounds(0, 0, 3000, 3000);
 
-function create(){
-    
-    //Inicializacion variables globales del juego.
-    velocidadX = 0;
-    velocidadY = 0;
-    velocidad = 5;
-    aX = 0;
-    aY = 0;
-    
-    //Tamano del mundo.
-    game.world.setBounds(0, 0, 3000, 3000);
-    
-    //Agregamos sus fisicas
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-   
-    //Crear tablero.
-    var tablero = new Tablero();
-    var matriz = tablero.getTablero();
-    
-    matriz[4][4] = 'wall';
-    matriz[4][5] = 'wall';
-    //Mapear el terreno.
-    for (var i = 0; i < matriz.length; i++) {
-        for (var j = 0; j < matriz[i].length; j++) {
-            switch(matriz[i][j]){
-                case 'water': 
-                    var sea = game.add.sprite(i*100, j*100, 'agua');
-                    sea.animations.add('moveSea');
-                    //Parametros (nombre animacion, velocidad, se repite).
-                    sea.animations.play('moveSea', 8, true);
-                    break;
-                case 'terrain':
-                    game.add.sprite(i*100, j*100, 'terrenoCesped');
-                    break;
-                case 'terrainTopLeft':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
-                    break;
-                case 'terrainBotLeft':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedBotLeft');
-                    break;
-                case 'terrainTopRight':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedTopRight');
-                    break;
-                case 'terrainBotRight':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedBotRight');
-                    break;
-                case 'terrainLeft':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedLeft');
-                    break;
-                case 'terrainRight':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedRight');
-                    break;
-                case 'terrainTop':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedTop');
-                    break;
-                case 'terrainBot':
-                    game.add.sprite(i*100, j*100, 'terrenoCespedBot');
-                    break;
-                case 'wall':
-                    var wall = game.add.sprite(i*100, j*100, 'wall');
-                    game.physics.arcade.enable(wall, Phaser.Physics.ARCADE);
-                    wall.body.immovable = true;
-                    break;
+        //Agregamos sus fisicas
+        game.physics.startSystem(Phaser.Physics.P2JS);
+
+        //Crear tablero.
+        var tablero = new Tablero();
+        var matriz = tablero.getTablero();
+
+        //Crear jugador.
+        player = game.add.sprite(375, 275, 'jugador');
+        game.physics.p2.enable(player);
+        var playerMaterial = game.physics.p2.createMaterial('playerMaterial', player.body);
+
+        //Mapear el terreno.
+        for (var i = 0; i < matriz.length; i++) {
+            for (var j = 0; j < matriz[i].length; j++) {
+                switch(matriz[i][j]){
+                    case 'water': 
+                        var sea = game.add.sprite(i*100, j*100, 'agua');
+                        sea.animations.add('moveSea');
+                        //Parametros (nombre animacion, velocidad, se repite).
+                        sea.animations.play('moveSea', 8, true);
+                        break;
+                    case 'terrain':
+                        game.add.sprite(i*100, j*100, 'terrenoCesped');
+                        break;
+                    case 'terrainTopLeft':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedTopLeft');
+                        break;
+                    case 'terrainBotLeft':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedBotLeft');
+                        break;
+                    case 'terrainTopRight':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedTopRight');
+                        break;
+                    case 'terrainBotRight':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedBotRight');
+                        break;
+                    case 'terrainLeft':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedLeft');
+                        break;
+                    case 'terrainRight':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedRight');
+                        break;
+                    case 'terrainTop':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedTop');
+                        break;
+                    case 'terrainBot':
+                        game.add.sprite(i*100, j*100, 'terrenoCespedBot');
+                        break;
+                    case 'wall':
+                        var wall = game.add.sprite(i*100+50, j*100+50, 'wall');
+                        game.physics.p2.enable(wall);
+                        wall.body.static = 2;
+                        var wallMaterial = game.physics.p2.createMaterial('wallMaterial', wall.body);
+                        var playerWall = game.physics.p2.createContactMaterial(wallMaterial, playerMaterial);
+                        playerWall.friction = 0;               // Friction to use in the contact of these two materials.
+                        playerWall.restitution = 1.0;          // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+                        playerWall.stiffness = 1e7;            // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
+                        playerWall.relaxation = 3;             // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
+                        playerWall.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
+                        playerWall.frictionRelaxation = 3;     // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
+                        playerWall.surfaceVelocity = 0;        // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
+                        walls.push(wall);
+                        break;
+                }
             }
         }
-    }
-    
-    //Crear jugador
-    player = game.add.sprite(375, 275, 'jugador');
-    game.physics.arcade.enable(player, Phaser.Physics.ARCADE);
-    player.body.collideWorldBounds = true;
-    
-    //creamos objeto
-    objetoVelocidad= game.add.sprite(400, 400, 'velocidad');
-    game.physics.enable(objetoVelocidad, Phaser.Physics.ARCADE);
-    objetoVelocidad.body.immovable=true;
-    
-    //Variable que pilla el teclado.
-    cursors = game.input.keyboard.createCursorKeys();
-}
 
-function update() {
-    
-    // object1, object2, collideCallback, processCallback, callbackContext
-    game.physics.arcade.collide(objetoVelocidad, player, cogeVelocidad, null, this);
-    
-    //Movimiento del jugador.
-    if (cursors.up.isDown)
-    {
-        aY -= velocidad;
-    }
-    else if (cursors.down.isDown)
-    {
-        aY += velocidad;
-    }
+        //creamos objeto
+        objetoVelocidad= game.add.sprite(400, 400, 'velocidad');
+        game.physics.p2.enable(objetoVelocidad);
+        //objetoVelocidad.body.immovable=true;
 
-    if (cursors.left.isDown)
-    {
-        aX -= velocidad;
-    }
-    else if (cursors.right.isDown)
-    {
-        aX += velocidad;
+        //Variable que pilla el teclado.
+        cursors = game.input.keyboard.createCursorKeys();
+    },
+    update: function(){
+        if (cursors.left.isDown)
+        {
+            player.body.force.x += -velocidad;
+        }
+        else if (cursors.right.isDown)
+        {
+            player.body.force.x += velocidad;
+        }
+
+        if (cursors.up.isDown)
+        {
+            player.body.force.y += -velocidad;
+        }
+        else if (cursors.down.isDown)
+        {
+            player.body.force.y += velocidad;
+        }
+
+        //La camara sigue al jugador.
+        game.camera.follow(player);
+        //Rastro del jugador
+        var rastro = game.add.sprite(player.x-25, player.y-25, 'jugadorTrail');
+        game.add.tween(rastro).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
+        game.add.tween(rastro.scale).to( { x: -0.01, y: -0.01 }, 2000, Phaser.Easing.Linear.None, true);
+        game.world.bringToTop(player);
     }
     
-    //Formula de la aceleracion.
-    velocidadX = velocidadX + aX;
-    velocidadY = velocidadY + aY;
-    aX = 0;
-    aY = 0;
-    //Movimiento del jugador.
-    player.body.velocity.setTo(velocidadX, velocidadY);
-    //La camara sigue al jugador.
-    game.camera.follow(player);
-    //Rastro del jugador
-    var rastro = game.add.sprite(player.x, player.y, 'jugadorTrail');
-    game.add.tween(rastro).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
-    game.add.tween(rastro.scale).to( { x: -0.01, y: -0.01 }, 2000, Phaser.Easing.Linear.None, true);
-    game.world.bringToTop(player);
-
-}
-
-function cogeVelocidad(sprite1, sprite2){
-    sprite1.destroy();
-    velocidad+=20;
-}
+};
