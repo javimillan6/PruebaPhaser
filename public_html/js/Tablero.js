@@ -36,6 +36,7 @@ class Tablero{
         }
         
         this.crearMuros();
+        this.colocarVelocidades(10);
     }
     
     getTablero(){
@@ -91,7 +92,7 @@ class Tablero{
                     }
                     if(comprobarLongitud == this.muros[muro].longitud){
                         for(var i = 0; i<this.muros[muro].longitud;i++){
-                            this.arrayTablero[posX+i][posY] = "wall";
+                            this.arrayTablero[posX+i][posY] = "wallHorizontal";
                         }
                         colocado = true;
                     }
@@ -105,12 +106,24 @@ class Tablero{
                     }
                     if(comprobarLongitud == this.muros[muro].longitud){
                         for(var i = 0; i<this.muros[muro].longitud;i++){
-                            this.arrayTablero[posX][posY+i] = "wall";
+                            this.arrayTablero[posX][posY+i] = "wallVertical";
                         }
                         colocado = true;
                     }
                 }
             }    
+        }
+    }
+    
+    colocarVelocidades(cantidad){
+        var i=0;
+        while(i<cantidad){
+            var posX = Math.floor(Math.random()*29);
+            var posY = Math.floor(Math.random()*29);
+            if(this.arrayTablero[posX][posY] == "terrain"){
+                this.arrayTablero[posX][posY] = "speedItem";
+                i++;
+            }
         }
     }
 }

@@ -21,7 +21,8 @@ var pantallaJuego ={
         game.load.image('terrenoCespedBotLeft', 'assets/mapa/suelo/terrenoCespedBotLeft.png');
         game.load.image('terrenoCespedRight', 'assets/mapa/suelo/terrenoCespedRight.png');
         game.load.image('terrenoCespedLeft', 'assets/mapa/suelo/terrenoCespedLeft.png');
-        game.load.image('wall', 'assets/mapa/wall.png');
+        game.load.image('wallHorizontal', 'assets/mapa/muro/muroHorizontal.png');
+        game.load.image('wallVertical', 'assets/mapa/muro/muroVertical.png');
         game.load.image('velocidad', 'assets/mapa/velocidad.png');        
     },
     create: function(){
@@ -81,8 +82,9 @@ var pantallaJuego ={
                     case 'terrainBot':
                         game.add.sprite(i*100, j*100, 'terrenoCespedBot');
                         break;
-                    case 'wall':
-                        var wall = game.add.sprite(i*100+50, j*100+50, 'wall');
+                    case 'wallHorizontal':
+                        game.add.sprite(i*100, j*100, 'terrenoCesped');
+                        var wall = game.add.sprite(i*100+50, j*100+25, 'wallHorizontal');
                         game.physics.p2.enable(wall);
                         wall.body.static = 2;
                         var wallMaterial = game.physics.p2.createMaterial('wallMaterial', wall.body);
@@ -96,14 +98,30 @@ var pantallaJuego ={
                         playerWall.surfaceVelocity = 0;        // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
                         walls.push(wall);
                         break;
+                    case 'wallVertical':
+                        game.add.sprite(i*100, j*100, 'terrenoCesped');
+                        var wall = game.add.sprite(i*100+25, j*100+50, 'wallVertical');
+                        game.physics.p2.enable(wall);
+                        wall.body.static = 2;
+                        var wallMaterial = game.physics.p2.createMaterial('wallMaterial', wall.body);
+                        var playerWall = game.physics.p2.createContactMaterial(wallMaterial, playerMaterial);
+                        playerWall.friction = 0;               // Friction to use in the contact of these two materials.
+                        playerWall.restitution = 1.0;          // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
+                        playerWall.stiffness = 1e7;            // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
+                        playerWall.relaxation = 3;             // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
+                        playerWall.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
+                        playerWall.frictionRelaxation = 3;     // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
+                        playerWall.surfaceVelocity = 0;        // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
+                        walls.push(wall);
+                        break;
+                    case 'speedItem':
+                        game.add.sprite(i*100, j*100, 'terrenoCesped');
+                        var objetoVelocidad = game.add.sprite(i*100+50, j*100+50, 'velocidad');
+                        game.physics.p2.enable(objetoVelocidad);
+                        break;
                 }
             }
         }
-
-        //creamos objeto
-        objetoVelocidad= game.add.sprite(400, 400, 'velocidad');
-        game.physics.p2.enable(objetoVelocidad);
-        //objetoVelocidad.body.immovable=true;
 
         //Variable que pilla el teclado.
         cursors = game.input.keyboard.createCursorKeys();
