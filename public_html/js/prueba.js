@@ -1,5 +1,3 @@
-var game= new Phaser.Game(800,600,Phaser.AUTO,'ejemploPhaser',{preload: preload, create: create, update: update});
-
 var land;
 var cursors;
 var player;
