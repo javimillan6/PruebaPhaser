@@ -35,6 +35,8 @@ var pantallaJuego ={
 
         //Agregamos sus fisicas
         game.physics.startSystem(Phaser.Physics.P2JS);
+        
+        //Collision groups
 
         //Crear tablero.
         var tablero = new Tablero();
@@ -43,6 +45,7 @@ var pantallaJuego ={
         //Crear jugador.
         player = game.add.sprite(375, 275, 'jugador');
         game.physics.p2.enable(player);
+        player.body.setCircle(25);
         var playerMaterial = game.physics.p2.createMaterial('playerMaterial', player.body);
 
         //Mapear el terreno.
