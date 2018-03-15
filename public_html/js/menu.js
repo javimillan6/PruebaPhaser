@@ -6,7 +6,7 @@ var menu ={
         this.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
         //this.scale.pageAlignHorizontally = true;
         this.scale.pageAlignVertically = true;
-        this.scale.setScreenSize(true);
+        //this.scale.setScreenSize(true);
         game.load.image('jugador', 'assets/player/player1.png');
         game.load.image('botonPlay', 'assets/menu/btnPlay.png');
         
@@ -80,13 +80,13 @@ var menu ={
         bolaDerecha = game.add.sprite(750, 50, 'jugador');
         bolaDerecha.scale.setTo(2, 2);
         game.physics.p2.enable(bolaDerecha, false);
-        //bolaDerecha.body.setCircle(300);
+        bolaDerecha.body.setCircle(48);
         
         bolaIzquierda = game.add.sprite(50, 550, 'jugador');
         bolaIzquierda.smoothed = false;
         bolaIzquierda.scale.setTo(2, 2);
         game.physics.p2.enable(bolaIzquierda, false);
-        //bolaIzquierda.body.setCircle(100);
+        bolaIzquierda.body.setCircle(48);
         
         bolaIzquierda.body.createBodyCallback(bolaDerecha, choqueBolas, this);
         game.physics.p2.setImpactEvents(true);
@@ -108,15 +108,14 @@ function botonPlay(){
 }
 
 function choqueBolas(derecha,izquierda){
-    bolaIzquierda.body.force.x+=13600*4;
-    bolaIzquierda.body.force.y+=-10400*4;
+    izquierda.sprite.body.force.x+=13600*4;
+    izquierda.sprite.body.force.y+=-10400*4;
         
-    bolaDerecha.body.force.x+=-13600*4;
-    bolaDerecha.body.force.y+=10400*4;
+    derecha.sprite.body.force.x+=-13600*4;
+    derecha.sprite.body.force.y+=10400*4;
     
     sprite.visible=true;
     fuego=true;
     
     botonplay = game.add.button(300, 250, 'botonPlay', botonPlay, this, 2, 1, 0);
-    bolaDerecha.scale.setTo(2, 2);
 }

@@ -37,7 +37,7 @@ var pantallaJuego ={
         game.physics.startSystem(Phaser.Physics.P2JS);
         
         //Collision groups
-
+        var grupoPlayers = game.physics.p2.createCollisionGroup();
         //Crear tablero.
         var tablero = new Tablero();
         var matriz = tablero.getTablero();
