@@ -176,7 +176,7 @@ function choqueBolas(derecha,izquierda){
     botonLogin.scale.setTo(0.8, 0.8);
     inputGrupo.add(botonLogin);
     
-    game.add.tween(inputGrupo).to( { alpha: 1 }, 3500, Phaser.Easing.Linear.None, true, 0, 1000, true);
+    game.add.tween(inputGrupo).to( { alpha: 1 }, 3500, "Linear", true);
     
     text = game.add.text(360, 387, "LOG IN");
     //text.anchor.setTo(0.5);
