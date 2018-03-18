@@ -1,6 +1,7 @@
 var bolaDerecha;
 var bolaIzquierda;
 var fuego=false;
+var explosion;
 WebFontConfig = {
     //  The Google Fonts we want to load (specify as many as you like in the array)
     google: {
@@ -30,6 +31,9 @@ var menu ={
         game.load.image('bola8', 'assets/menu/bolasColores/bola8.png');
         game.load.image('bola9', 'assets/menu/bolasColores/bola9.png');
         game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+        
+        game.load.audio('explosion', 'assets/audio/SoundEffects/explosion.wav');
+        game.load.audio('fondo', 'assets/audio/SoundEffects/fondo.wav');
         
     },
     create: function(){
@@ -117,6 +121,11 @@ var menu ={
         
         bolaDerecha.body.force.x-=13600;
         bolaDerecha.body.force.y=10400;
+        
+        //audio
+        explosion = game.add.audio('explosion');
+        fondo = game.add.audio('fondo');
+        
     },
     update: function(){
         if (fuego) filter.update();
@@ -125,12 +134,14 @@ var menu ={
 };
 
 function botonPlay(){
+    fondo.stop();
     game.state.start("pantallaJuego");
 }
 
 function choqueBolas(derecha,izquierda){
     bolasAlteatorias();
-
+    explosion.play();
+    explosion.onStop.add(iniciarMusica, this);
     bolaDerecha.destroy();
     bolaIzquierda.destroy();
     
@@ -211,4 +222,8 @@ function bolasAlteatorias(){
         
     }
     
+}
+
+function iniciarMusica(){
+    fondo.play();
 }

@@ -2,7 +2,6 @@ var land;
 var cursors;
 var player;
 var velocidad;
-var walls;
 
 var pantallaJuego ={
     preload: function(){
@@ -27,26 +26,24 @@ var pantallaJuego ={
     },
     create: function(){
         //Inicializacion variables globales del juego.
-        velocidad = 1000;
-        walls = [];
+        velocidad = 500;
 
         //Tamano del mundo.
         game.world.setBounds(0, 0, 3000, 3000);
+        game.physics.p2.setImpactEvents(true);
+        game.physics.p2.restitution = 1.0;
 
         //Agregamos sus fisicas
         game.physics.startSystem(Phaser.Physics.P2JS);
         
         //Collision groups
         var grupoPlayers = game.physics.p2.createCollisionGroup();
+        var grupoVelocidades = game.physics.p2.createCollisionGroup();
+        var grupoMuros = game.physics.p2.createCollisionGroup();
+        
         //Crear tablero.
         var tablero = new Tablero();
         var matriz = tablero.getTablero();
-
-        //Crear jugador.
-        player = game.add.sprite(375, 275, 'jugador');
-        game.physics.p2.enable(player);
-        player.body.setCircle(25);
-        var playerMaterial = game.physics.p2.createMaterial('playerMaterial', player.body);
 
         //Mapear el terreno.
         for (var i = 0; i < matriz.length; i++) {
@@ -90,46 +87,42 @@ var pantallaJuego ={
                         var wall = game.add.sprite(i*100+50, j*100+25, 'wallHorizontal');
                         game.physics.p2.enable(wall);
                         wall.body.static = 2;
-                        var wallMaterial = game.physics.p2.createMaterial('wallMaterial', wall.body);
-                        var playerWall = game.physics.p2.createContactMaterial(wallMaterial, playerMaterial);
-                        playerWall.friction = 0;               // Friction to use in the contact of these two materials.
-                        playerWall.restitution = 1.0;          // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-                        playerWall.stiffness = 1e7;            // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
-                        playerWall.relaxation = 3;             // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
-                        playerWall.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
-                        playerWall.frictionRelaxation = 3;     // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
-                        playerWall.surfaceVelocity = 0;        // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
-                        walls.push(wall);
+                        wall.body.setCollisionGroup(grupoMuros);
+                        wall.body.collides(grupoPlayers);
                         break;
                     case 'wallVertical':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
                         var wall = game.add.sprite(i*100+25, j*100+50, 'wallVertical');
                         game.physics.p2.enable(wall);
                         wall.body.static = 2;
-                        var wallMaterial = game.physics.p2.createMaterial('wallMaterial', wall.body);
-                        var playerWall = game.physics.p2.createContactMaterial(wallMaterial, playerMaterial);
-                        playerWall.friction = 0;               // Friction to use in the contact of these two materials.
-                        playerWall.restitution = 1.0;          // Restitution (i.e. how bouncy it is!) to use in the contact of these two materials.
-                        playerWall.stiffness = 1e7;            // Stiffness of the resulting ContactEquation that this ContactMaterial generate.
-                        playerWall.relaxation = 3;             // Relaxation of the resulting ContactEquation that this ContactMaterial generate.
-                        playerWall.frictionStiffness = 1e7;    // Stiffness of the resulting FrictionEquation that this ContactMaterial generate.
-                        playerWall.frictionRelaxation = 3;     // Relaxation of the resulting FrictionEquation that this ContactMaterial generate.
-                        playerWall.surfaceVelocity = 0;        // Will add surface velocity to this material. If bodyA rests on top if bodyB, and the surface velocity is positive, bodyA will slide to the right.
-                        walls.push(wall);
+                        wall.body.setCollisionGroup(grupoMuros);
+                        wall.body.collides(grupoPlayers);
                         break;
                     case 'speedItem':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
                         var objetoVelocidad = game.add.sprite(i*100+50, j*100+50, 'velocidad');
                         game.physics.p2.enable(objetoVelocidad);
+                        objetoVelocidad.body.setCollisionGroup(grupoVelocidades);
+                        objetoVelocidad.body.collides(grupoPlayers);
                         break;
                 }
             }
         }
+        
+        //Crear jugador.
+        player = game.add.sprite(375, 275, 'jugador');
+        game.physics.p2.enable(player);
+        player.body.setCircle(25);
+        player.body.setCollisionGroup(grupoPlayers);
+        player.body.collides(grupoVelocidades, cogerVelocidad, this);
+        player.body.collides(grupoMuros);
 
         //Variable que pilla el teclado.
         cursors = game.input.keyboard.createCursorKeys();
+        
     },
     update: function(){
+        
         if (cursors.left.isDown)
         {
             player.body.force.x += -velocidad;
@@ -158,3 +151,8 @@ var pantallaJuego ={
     }
     
 };
+
+function cogerVelocidad(body1, body2){
+    velocidad += 100;
+    body2.destroy();
+}
