@@ -2,6 +2,8 @@ var bolaDerecha;
 var bolaIzquierda;
 var fuego=false;
 var explosion;
+var botonLogin;
+var botonLoginHover;
 WebFontConfig = {
     //  The Google Fonts we want to load (specify as many as you like in the array)
     google: {
@@ -21,6 +23,7 @@ var menu ={
         game.load.image('strikeballName', 'assets/menu/strikeballName.png');
         game.load.image('v2Name', 'assets/menu/v2Name.png');
         game.load.image('botonVerde', 'assets/menu/botonVerde.png');
+        game.load.image('botonAzul', 'assets/menu/botonAzul.png');
         game.load.image('bola1', 'assets/menu/bolasColores/bola1.png');
         game.load.image('bola2', 'assets/menu/bolasColores/bola2.png');
         game.load.image('bola3', 'assets/menu/bolasColores/bola3.png');
@@ -135,7 +138,7 @@ var menu ={
 
 function botonPlay(){
     fondo.stop();
-    game.state.start("pantallaJuego");
+    game.state.start("menuPrincipal");
 }
 
 function choqueBolas(derecha,izquierda){
@@ -183,20 +186,50 @@ function choqueBolas(derecha,izquierda){
     });
     inputGrupo.add(password);
     inputGrupo.alpha = 0;
-    var botonLogin= game.add.button(330, 380, 'botonVerde', botonPlay, this, 2, 1, 0);
-    botonLogin.scale.setTo(0.8, 0.8);
+    botonLogin= game.add.button(350, 380, 'botonVerde', botonPlay, this, 2, 1, 0);
+    botonLogin.scale.setTo(0.3, 0.3);
+    botonLogin.onInputOver.add(over, this);
+    botonLogin.onInputOut.add(out, this);
+    
+    botonLoginHover=game.add.button(350, 380, 'botonAzul', botonPlay, this, 2, 1, 0);
+    botonLoginHover.scale.setTo(0.3, 0.3);
+    botonLoginHover.visible=false;
+    
+    
     inputGrupo.add(botonLogin);
     
     game.add.tween(inputGrupo).to( { alpha: 1 }, 3500, "Linear", true);
     
-    text = game.add.text(360, 387, "LOG IN");
+    text = game.add.text(370, 387, "LOG IN");
     //text.anchor.setTo(0.5);
 
     text.font = 'Comfortaa';
     text.fontSize = 25;
     text.fill = '#ffffff';
     
+    //BOTON TEMPORAL PARA ACCEDER DIRECTO AL JUEGO SIN PASAR POR MENU
+    botonentrar= game.add.button(350, 450, 'botonVerde', function(){game.state.start("pantallaJuego");}, this, 2, 1, 0);
+    botonentrar.scale.setTo(0.3, 0.3);
+    textoPrueba = game.add.text(370, 450, "ENTRAR");
+    textoPrueba.font = 'Comfortaa';
+    textoPrueba.fontSize = 25;
+    textoPrueba.fill = '#ffffff';
+
 }
+
+function over(){console.log("entro")
+    botonLoginHover.visible=true;
+    botonLogin.visible=false;
+
+}
+
+function out(){console.log("salgo")
+    botonLogin.visible=true;
+    botonLoginHover.visible=false;
+
+}
+
+
 
 function bolasAlteatorias(){
     for (var i = 0; i < 50; i++) {
