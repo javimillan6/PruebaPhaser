@@ -218,14 +218,15 @@ function choqueBolas(derecha,izquierda){
 }
 
 function over(){console.log("entro")
-    botonLoginHover.visible=true;
-    botonLogin.visible=false;
+    //botonLoginHover.visible=true;
+    //botonLogin.visible=false;
+    botonLogin.loadTexture('botonVerde');
 
 }
 
 function out(){console.log("salgo")
-    botonLogin.visible=true;
-    botonLoginHover.visible=false;
+    //botonLogin.visible=true;
+    //botonLoginHover.visible=false;
 
 }
 

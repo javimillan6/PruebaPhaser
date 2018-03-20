@@ -153,6 +153,8 @@ var pantallaJuego ={
 };
 
 function cogerVelocidad(body1, body2){
+    body2.sprite.destroy();
     velocidad += 100;
-    body2.destroy();
+    
+    
 }
