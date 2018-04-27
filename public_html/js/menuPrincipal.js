@@ -7,7 +7,7 @@ var menuPrincipal ={
     create: function(){
         game.add.sprite(0,0, 'fondoMenu');
         
-        var botonPlay = game.add.button(300, 200,'botonAzul');
+        var botonPlay = game.add.button(300, 200,'botonAzul' , function(){game.state.start("menuLobby");}, this, 2, 1, 0);
         botonPlay.scale.setTo(0.5, 0.4);
         var textPlay = game.add.text(botonPlay.x+70, botonPlay.y+15, "PLAY");
         textPlay.font = 'Comfortaa';
