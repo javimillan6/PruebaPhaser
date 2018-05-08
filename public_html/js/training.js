@@ -1,15 +1,18 @@
-/*
-
 var land;
 var cursors;
 var player;
 var velocidad;
+var grupoPlayers;
+var grupoVelocidades;
+var grupoMuros;
+var velX;
+var velY;
+var alive = true;
 
-var pantallaJuego ={
+var training ={
     preload: function(){
         //Imagenes y sprites del jugador
         game.load.image('jugador', 'assets/player/playerBlue.png');
-        game.load.image('jugadorTrail', 'assets/player/playerBlueTrail.png');
 
         //Imagenes y sprites del suelo
         game.load.spritesheet('agua', 'assets/mapa/aguaSpriteSheet.png', 100, 100);
@@ -28,20 +31,30 @@ var pantallaJuego ={
     },
     create: function(){
         //Inicializacion variables globales del juego.
-        velocidad = 500;
+        velocidad = 4;
+        velX = 0;
+        velY = 0;
 
         //Tamano del mundo.
         game.world.setBounds(0, 0, 3000, 3000);
-        game.physics.p2.setImpactEvents(true);
-        game.physics.p2.restitution = 1.0;
+        
 
         //Agregamos sus fisicas
-        game.physics.startSystem(Phaser.Physics.P2JS);
+        game.physics.startSystem(Phaser.Physics.ARCADE);
         
         //Collision groups
-        var grupoPlayers = game.physics.p2.createCollisionGroup();
-        var grupoVelocidades = game.physics.p2.createCollisionGroup();
-        var grupoMuros = game.physics.p2.createCollisionGroup();
+        grupoPlayers = game.add.physicsGroup();
+        grupoPlayers.enableBody = true;
+        grupoPlayers.physicsBodyType = Phaser.Physics.ARCADE;
+        grupoVelocidades = game.add.physicsGroup();
+        grupoVelocidades.enableBody = true;
+        grupoVelocidades.physicsBodyType = Phaser.Physics.ARCADE;    
+        grupoMuros = game.add.physicsGroup();
+        grupoMuros.enableBody = true;
+        grupoMuros.physicsBodyType = Phaser.Physics.ARCADE;
+        grupoSea = game.add.physicsGroup();
+        grupoSea.enableBody = true;
+        grupoSea.physicsBodyType = Phaser.Physics.ARCADE;
         
         //Crear tablero.
         var tablero = new Tablero();
@@ -52,10 +65,11 @@ var pantallaJuego ={
             for (var j = 0; j < matriz[i].length; j++) {
                 switch(matriz[i][j]){
                     case 'water': 
-                        var sea = game.add.sprite(i*100, j*100, 'agua');
+                        var sea = grupoSea.create(i*100, j*100, 'agua');
                         sea.animations.add('moveSea');
                         //Parametros (nombre animacion, velocidad, se repite).
                         sea.animations.play('moveSea', 8, true);
+                        sea.body.immovable = true;
                         break;
                     case 'terrain':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
@@ -86,78 +100,100 @@ var pantallaJuego ={
                         break;
                     case 'wallHorizontal':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
-                        var wall = game.add.sprite(i*100+50, j*100+25, 'wallHorizontal');
-                        game.physics.p2.enable(wall);
-                        wall.body.static = 2;
-                        wall.body.setCollisionGroup(grupoMuros);
-                        wall.body.collides(grupoPlayers);
+                        var wall = grupoMuros.create(i*100, j*100, 'wallHorizontal');
+                        wall.body.immovable = true;
+
                         break;
                     case 'wallVertical':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
-                        var wall = game.add.sprite(i*100+25, j*100+50, 'wallVertical');
-                        game.physics.p2.enable(wall);
-                        wall.body.static = 2;
-                        wall.body.setCollisionGroup(grupoMuros);
-                        wall.body.collides(grupoPlayers);
+                        var wall = grupoMuros.create(i*100, j*100, 'wallVertical');
+                        wall.body.immovable = true;
+
                         break;
                     case 'speedItem':
                         game.add.sprite(i*100, j*100, 'terrenoCesped');
-                        var objetoVelocidad = game.add.sprite(i*100+50, j*100+50, 'velocidad');
-                        game.physics.p2.enable(objetoVelocidad);
-                        objetoVelocidad.body.setCollisionGroup(grupoVelocidades);
-                        objetoVelocidad.body.collides(grupoPlayers);
+                        grupoVelocidades.create(i*100+35, j*100+35, 'velocidad');
                         break;
                 }
             }
         }
         
         //Crear jugador.
-        player = game.add.sprite(375, 275, 'jugador');
-        game.physics.p2.enable(player);
-        player.body.setCircle(25);
-        player.body.setCollisionGroup(grupoPlayers);
-        player.body.collides(grupoVelocidades, cogerVelocidad, this);
-        player.body.collides(grupoMuros);
-
+        player = grupoPlayers.create(375, 275, 'jugador');
+        player.body.bounce.setTo(1, 1);
         //Variable que pilla el teclado.
         cursors = game.input.keyboard.createCursorKeys();
         
+        game.world.bringToTop(grupoPlayers);
+        game.world.bringToTop(grupoVelocidades);
+        game.world.bringToTop(grupoMuros);
     },
     update: function(){
         
-        if (cursors.left.isDown)
-        {
-            player.body.force.x += -velocidad;
-        }
-        else if (cursors.right.isDown)
-        {
-            player.body.force.x += velocidad;
+        game.physics.arcade.overlap(grupoPlayers, grupoVelocidades, cogerVelocidad, null, this);
+        game.physics.arcade.overlap(grupoPlayers, grupoSea, swim, null, this);
+        game.physics.arcade.collide(grupoPlayers, grupoMuros, choqueMuro);
+        
+        if(alive){
+            if (cursors.left.isDown)
+            {
+                velX = velX-velocidad;
+            }
+            else if (cursors.right.isDown)
+            {
+                velX = velX+velocidad;
+            }
+
+            if (cursors.up.isDown)
+            {
+                velY = velY-velocidad;
+            }
+            else if (cursors.down.isDown)
+            {
+                velY = velY+velocidad;
+            }
         }
 
-        if (cursors.up.isDown)
-        {
-            player.body.force.y += -velocidad;
-        }
-        else if (cursors.down.isDown)
-        {
-            player.body.force.y += velocidad;
-        }
+        //Movimiento del jugador
+        player.body.velocity.x = velX;
+        player.body.velocity.y = velY;
 
         //La camara sigue al jugador.
-        game.camera.follow(player);
-        //Rastro del jugador
+        if(alive){
+            game.camera.follow(player);
+        }else{
+            game.camera.follow(null);
+        }
         
-        var rastro = game.add.sprite(player.x-25, player.y-25, 'jugadorTrail');
-        game.add.tween(rastro).to( { alpha: 0 }, 2000, Phaser.Easing.Linear.None, true);
-        game.add.tween(rastro.scale).to( { x: -0.01, y: -0.01 }, 2000, Phaser.Easing.Linear.None, true);
-        game.world.bringToTop(player);
     }
     
 };
 
 function cogerVelocidad(body1, body2){
-    body2.sprite.destroy();
-    velocidad += 100;
+    body2.destroy();
+    velocidad += 3;
 }
 
-*/
+function choqueMuro(body1, body2){
+    if(body2.body.touching.up == true || body2.body.touching.down == true) velY = -velY;
+    if(body2.body.touching.right == true || body2.body.touching.left == true) velX = -velX;
+}
+
+function swim(body1, body2){
+    var distanciaX = Math.abs((body1.x+25) - (body2.x+50));
+    var distanciaY = Math.abs((body1.y+25) - (body2.y+50));
+    
+    if(distanciaX<38 && distanciaY<38){
+        if(alive){
+            setTimeout(function(){ 
+                alive = true;
+                game.state.start("menuPrincipal"); 
+            }, 1000);
+        }
+        alive=false;
+        game.add.tween(body1).to( { alpha: 0 }, 200, Phaser.Easing.Linear.None, true, 0, 200, false);
+        
+    }
+}
+
+

@@ -14,14 +14,14 @@ var menuPrincipal ={
         textPlay.fontSize = 30;
         textPlay.fill = '#ffffff';
         
-        var botonHowToPlay = game.add.button(300, 300,'botonAzul');
+        var botonHowToPlay = game.add.button(300, 300,'botonAzul' , function(){game.state.start("howtoplay");}, this, 2, 1, 0);
         botonHowToPlay.scale.setTo(0.5, 0.4);
         var textHowToPlay = game.add.text(botonHowToPlay.x+15, botonHowToPlay.y+15, "HOW TO PLAY");
         textHowToPlay.font = 'Comfortaa';
         textHowToPlay.fontSize = 25;
         textHowToPlay.fill = '#ffffff';
         
-        var botonTraining = game.add.button(300, 400,'botonAzul');
+        var botonTraining = game.add.button(300, 400,'botonAzul' , function(){game.state.start("training");}, this, 2, 1, 0);
         botonTraining.scale.setTo(0.5, 0.4);
         var textTraining = game.add.text(botonTraining.x+30, botonTraining.y+15, "TRAINING");
         textTraining.font = 'Comfortaa';
